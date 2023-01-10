@@ -1,4 +1,4 @@
-package com.awsweb.book.springboot.dto;
+package com.awsweb.book.springboot.web.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
