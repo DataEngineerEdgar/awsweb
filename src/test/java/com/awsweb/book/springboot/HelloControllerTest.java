@@ -1,5 +1,6 @@
 package com.awsweb.book.springboot;
 
+import com.awsweb.book.springboot.config.auth.SecurityConfig;
 import com.awsweb.book.springboot.web.HelloController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,13 +22,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.security.test.context.support.WithMockUser;
+
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = HelloController.class)
-
+@WebMvcTest(controllers = HelloController.class,
+       excludeFilters = {
+               @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
+       }
+)
 public class HelloControllerTest {
-    @Autowired
-    private MockMvc mvc; // 웹 API 테스트할 때 사용, 스프링 MVC 테스트의 시작점 , HTTP GET과 POST 등에 대한 API테스트 가능
 
+    @Autowired
+    private MockMvc mvc;
+
+    @WithMockUser(roles="USER")
     @Test
     public void return_to_hello() throws Exception {
         String hello = "hello";
@@ -35,6 +45,7 @@ public class HelloControllerTest {
                 .andExpect(content().string(hello)); // mvc.perform 의 결과를 검증 함 , 응담 본분 내용 검증 , hello 내용이 맞는 지 검증
     }
 
+    @WithMockUser(roles="USER")
     @Test
     public void return_to_helloDto() throws Exception {
         String name = "hello";
